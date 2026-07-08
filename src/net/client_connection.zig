@@ -1,6 +1,8 @@
 const std = @import("std");
 const PacketWriter = @import("packet_writer.zig").PacketWriter;
+const PacketReader = @import("packet_reader.zig").PacketReader;
 const ClientCrypto = @import("client_crypto.zig").ClientCrypto;
+const dispatcher = @import("../packet/packet_dispatcher.zig");
 
 pub const ClientConnection = struct {
     allocator: std.mem.Allocator,
@@ -41,47 +43,26 @@ pub const ClientConnection = struct {
 
     fn readPacket(self: *ClientConnection, r: anytype) !void {
         var header: [4]u8 = undefined;
-        try readExact(r, &header);
+        try PacketReader.readExact(r, &header);
 
         if (!self.crypt.checkPacket(&header)) {
             std.debug.print("Invalid packet header\n", .{});
             return error.InvalidHeader;
         }
 
-        std.debug.print("Valid packet header\n", .{});
-
         const packet_len = ClientCrypto.getPacketLength(&header);
-        std.debug.print("Packet length: {}\n", .{packet_len});
 
         const payload = try self.allocator.alloc(u8, packet_len);
         defer self.allocator.free(payload);
 
-        try readExact(r, payload);
+        try PacketReader.readExact(r, payload);
 
         self.crypt.decrypt(payload);
 
-        const opcode = payload[0] | (@as(u16, payload[1]) << 8);
-        std.debug.print("Opcode: {X:0>4}\n", .{opcode});
-
-        switch (opcode) {
-            // 0x0022 sent after handshake but before login packet
-            // ???
-            0x0001 => {
-                std.debug.print("Login packet detected: ", .{});
-                for (payload) |b| {
-                    std.debug.print("{X:0>2} ", .{b});
-                }
-                std.debug.print("\n", .{});
-                // handleLogin()
-            },
-            // 0x00DA sent when exiting login screen
-            else => std.debug.print("Unknown opcode\n", .{}),
-        }
-    }
-
-    fn readExact(r: anytype, buf: []u8) !void {
-        var vec = [_][]u8{buf};
-        try r.readVecAll(vec[0..]);
+        try dispatcher.dispatch(
+            self.allocator,
+            payload,
+        );
     }
 
     fn sendHandshake(self: *ClientConnection) !void {
