@@ -1,5 +1,6 @@
 const std = @import("std");
 const PacketWriter = @import("packet_writer.zig").PacketWriter;
+const PacketReader = @import("packet_reader.zig").PacketReader;
 const ClientCrypto = @import("client_crypto.zig").ClientCrypto;
 
 pub const ClientConnection = struct {
@@ -41,7 +42,7 @@ pub const ClientConnection = struct {
 
     fn readPacket(self: *ClientConnection, r: anytype) !void {
         var header: [4]u8 = undefined;
-        try readExact(r, &header);
+        try PacketReader.readExact(r, &header);
 
         if (!self.crypt.checkPacket(&header)) {
             std.debug.print("Invalid packet header\n", .{});
@@ -56,32 +57,21 @@ pub const ClientConnection = struct {
         const payload = try self.allocator.alloc(u8, packet_len);
         defer self.allocator.free(payload);
 
-        try readExact(r, payload);
+        try PacketReader.readExact(r, payload);
 
         self.crypt.decrypt(payload);
 
         const opcode = payload[0] | (@as(u16, payload[1]) << 8);
-        std.debug.print("Opcode: {X:0>4}\n", .{opcode});
+        //std.debug.print("Opcode: {X:0>4}\n", .{opcode});
 
         switch (opcode) {
-            // 0x0022 sent after handshake but before login packet
-            // ???
             0x0001 => {
-                std.debug.print("Login packet detected: ", .{});
-                for (payload) |b| {
-                    std.debug.print("{X:0>2} ", .{b});
-                }
-                std.debug.print("\n", .{});
-                // handleLogin()
+                try handleLogin(self, payload);
             },
-            // 0x00DA sent when exiting login screen
+            0x0022 => {}, // sent after handshake but before login ????
+            0x00DA => {}, // sent when exiting login screen
             else => std.debug.print("Unknown opcode\n", .{}),
         }
-    }
-
-    fn readExact(r: anytype, buf: []u8) !void {
-        var vec = [_][]u8{buf};
-        try r.readVecAll(vec[0..]);
     }
 
     fn sendHandshake(self: *ClientConnection) !void {
@@ -121,5 +111,28 @@ pub const ClientConnection = struct {
 
         try writer.interface.writeAll(buffer);
         try writer.interface.flush();
+    }
+
+    pub fn handleLogin(
+        connection: *ClientConnection,
+        payload: []const u8,
+    ) !void {
+        var reader = PacketReader.init(payload);
+
+        std.debug.print("Login packet detected: ", .{});
+        for (payload) |b| {
+            std.debug.print("{X:0>2} ", .{b});
+        }
+        std.debug.print("\n", .{});
+
+        const opcode = try reader.readUint16();
+        const username = try reader.readString();
+        const password = try reader.readString();
+
+        std.debug.print("Opcode: {X:0>4}\n", .{opcode});
+        std.debug.print("Username: {s}\n", .{username});
+        std.debug.print("Password: {s}\n", .{password});
+
+        _ = connection;
     }
 };
