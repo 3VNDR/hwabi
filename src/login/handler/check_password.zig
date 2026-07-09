@@ -1,7 +1,7 @@
 const std = @import("std");
-const PacketReader = @import("../net/packet_reader.zig").PacketReader;
+const PacketReader = @import("../../net/packet_reader.zig").PacketReader;
 
-pub fn onCheckPassword(
+pub fn checkPassword(
     allocator: std.mem.Allocator,
     payload: []const u8,
 ) !void {

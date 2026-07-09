@@ -2,7 +2,7 @@ const std = @import("std");
 const PacketWriter = @import("packet_writer.zig").PacketWriter;
 const PacketReader = @import("packet_reader.zig").PacketReader;
 const ClientCrypto = @import("client_crypto.zig").ClientCrypto;
-const dispatcher = @import("../packet/packet_dispatcher.zig");
+const dispatcher = @import("packet_dispatcher.zig");
 
 pub const ClientConnection = struct {
     allocator: std.mem.Allocator,
