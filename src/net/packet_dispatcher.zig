@@ -10,12 +10,10 @@ pub fn dispatch(
     var reader = PacketReader.init(payload);
     const opcode = try reader.readUint16();
 
-    std.debug.print("Client sent the following opcode {X:0>4}\n", .{opcode});
-
     switch (opcode) {
-        @intFromEnum(RecvOpcode.CheckPassword) => try login.checkPassword(allocator, payload),
-        0x0022 => {},
-        0x00DA => {},
+        @intFromEnum(RecvOpcode.CheckPassword) => try login.checkPassword(allocator, &reader),
+        0x0022 => {}, // ??? sent after handshake but before checkpassword
+        0x00DA => {}, // client exit
         else => {
             std.debug.print("Unknown opcode {X:0>4}\n", .{opcode});
         },
