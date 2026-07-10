@@ -1,5 +1,6 @@
 const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
+const ClientSession = @import("client_session.zig").ClientSession;
 
 pub const Server = struct {
     allocator: std.mem.Allocator,
@@ -37,9 +38,21 @@ pub const Server = struct {
     }
 };
 
-fn connectionWorkerTask(allocator: std.mem.Allocator, io: std.Io, client: std.Io.net.Stream) void {
-    var conn = ClientConnection.init(allocator, io, client);
-    conn.handleLoop() catch |err| {
-        std.debug.print("Client connection closed with error: {}\n", .{err});
+fn connectionWorkerTask(
+    allocator: std.mem.Allocator,
+    io: std.Io,
+    client: std.Io.net.Stream,
+) void {
+    var session = ClientSession{
+        .allocator = allocator,
+        .connection = ClientConnection.init(
+            allocator,
+            io,
+            client,
+        ),
+    };
+
+    session.handleLoop() catch |err| {
+        std.debug.print("Client session closed with error: {}\n", .{err});
     };
 }
