@@ -59,7 +59,7 @@ pub const ClientCrypto = struct {
     }
 
     pub fn encrypt(self: *ClientCrypto, data: []u8) void {
-        shanda.transform(data);
+        shanda.encryptData(data);
         aes.aesCrypt(
             data,
             &self.encode_iv,
@@ -72,7 +72,7 @@ pub const ClientCrypto = struct {
             data,
             &self.decode_iv,
         );
-        shanda.transform(data);
+        shanda.decryptData(data);
         self.updateDecodeIv();
     }
 

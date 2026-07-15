@@ -1,6 +1,7 @@
 const std = @import("std");
 
-pub fn transform(data: []u8) void {
+// incoming packets
+pub fn decryptData(data: []u8) void {
     var j: u8 = 1;
     while (j <= 6) : (j += 1) {
         var remember: u8 = 0;
@@ -42,6 +43,50 @@ pub fn transform(data: []u8) void {
 
                 data[i] = cur;
                 data_len -%= 1;
+            }
+        }
+    }
+}
+
+// outgoing packets
+pub fn encryptData(data: []u8) void {
+    var j: usize = 0;
+
+    while (j < 6) : (j += 1) {
+        var remember: u8 = 0;
+        var dataLength: u8 = @intCast(data.len & 0xFF);
+
+        if (j % 2 == 0) {
+            for (data) |*byte| {
+                var cur = byte.*;
+
+                cur = rollLeft(cur, 3);
+                cur +%= dataLength;
+                cur ^= remember;
+                remember = cur;
+                cur = rollRight(cur, dataLength);
+                cur = ~cur;
+                cur +%= 0x48;
+
+                dataLength -%= 1;
+                byte.* = cur;
+            }
+        } else {
+            var i = data.len;
+            while (i > 0) {
+                i -= 1;
+
+                var cur = data[i];
+
+                cur = rollLeft(cur, 4);
+                cur +%= dataLength;
+                cur ^= remember;
+                remember = cur;
+                cur ^= 0x13;
+                cur = rollRight(cur, 3);
+
+                dataLength -%= 1;
+                data[i] = cur;
             }
         }
     }
