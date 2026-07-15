@@ -2,7 +2,7 @@ const std = @import("std");
 const PacketWriter = @import("packet_writer.zig").PacketWriter;
 const PacketReader = @import("packet_reader.zig").PacketReader;
 const ClientCrypto = @import("client_crypto.zig").ClientCrypto;
-const dispatcher = @import("../packet/packet_dispatcher.zig");
+const dispatcher = @import("packet_dispatcher.zig");
 
 pub const ClientConnection = struct {
     allocator: std.mem.Allocator,
@@ -24,24 +24,11 @@ pub const ClientConnection = struct {
         };
     }
 
-    pub fn handleLoop(self: *ClientConnection) !void {
-        defer self.client.close(self.io);
-
-        std.debug.print("Client session started.\n", .{});
-
-        try self.sendHandshake();
-        std.debug.print("Handshake sent.\n", .{});
-
-        var stream_buffer: [4096]u8 = undefined;
-        var reader = self.client.reader(self.io, &stream_buffer);
-        const r = &reader.interface;
-
-        while (true) {
-            try self.readPacket(r);
-        }
-    }
-
-    fn readPacket(self: *ClientConnection, r: anytype) !void {
+    pub fn readPacket(
+        self: *ClientConnection,
+        session: anytype,
+        r: anytype,
+    ) !void {
         var header: [4]u8 = undefined;
         try PacketReader.readExact(r, &header);
 
@@ -60,12 +47,12 @@ pub const ClientConnection = struct {
         self.crypt.decrypt(payload);
 
         try dispatcher.dispatch(
-            self.allocator,
+            session,
             payload,
         );
     }
 
-    fn sendHandshake(self: *ClientConnection) !void {
+    pub fn sendHandshake(self: *ClientConnection) !void {
         var stream_buffer: [4096]u8 = undefined;
         var writer = self.client.writer(self.io, &stream_buffer);
         const w = &writer.interface;
@@ -84,7 +71,7 @@ pub const ClientConnection = struct {
         try std.Io.Writer.flush(w);
     }
 
-    pub fn writePacket(self: *ClientConnection, packet_data: []const u8) !void {
+    pub fn sendPacket(self: *ClientConnection, packet_data: []const u8) !void {
         const total_len = 4 + packet_data.len;
 
         var buffer = try self.allocator.alloc(u8, total_len);
