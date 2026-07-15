@@ -3,7 +3,8 @@ const PacketReader = @import("../../net/packet_reader.zig").PacketReader;
 const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
 const AccountService = @import("../account_service.zig");
-const result = @import("../packet/check_password_result.zig");
+const CheckPasswordResult = @import("../packet/check_password_result.zig");
+const LoginResult = @import("../login_result.zig").LoginResult;
 
 pub fn checkPassword(
     session: *ClientSession,
@@ -23,10 +24,10 @@ pub fn checkPassword(
     // we are looking for the hardcoded account values of testuser and password
     if (account) |acc| {
         std.debug.print("success", .{});
-        try result.writeSuccess(&writer, acc);
+        try CheckPasswordResult.writeSuccess(&writer, acc);
     } else {
         std.debug.print("not valid account information", .{});
-        try result.writeFailure(&writer, 3);
+        try CheckPasswordResult.writeFailure(&writer, LoginResult.IncorrectPassword);
     }
 
     try session.sendPacket(writer.slice());
