@@ -8,11 +8,15 @@ pub fn authenticate(
     if (std.mem.eql(u8, username, "testuser") and
         std.mem.eql(u8, password, "password"))
     {
-        return Account{
+        return .{
             .id = 1,
-            .username = username,
+            .username = "testuser",
+
             .gender = 0,
-            .gm_level = 0,
+            .account_mode = 0,
+            .user_type = 0,
+
+            .character_slots = 4,
         };
     }
 
