@@ -18,6 +18,10 @@ pub const PacketReader = struct {
         return self.data.len - self.pos;
     }
 
+    pub fn remainingSlice(self: *PacketReader) []const u8 {
+        return self.data[self.pos..];
+    }
+
     pub fn readByte(self: *PacketReader) !u8 {
         if (self.pos >= self.data.len)
             return error.EndOfPacket;

@@ -2,7 +2,7 @@ const std = @import("std");
 const ClientSession = @import("client_session.zig").ClientSession;
 const PacketReader = @import("packet_reader.zig").PacketReader;
 const RecvOpcode = @import("recv_opcode.zig").RecvOpcode;
-const login = @import("../login/handler/check_password.zig");
+const loginHandler = @import("../login/handler/mod.zig");
 
 pub fn dispatch(
     session: *ClientSession,
@@ -12,7 +12,10 @@ pub fn dispatch(
     const opcode = try reader.readUint16();
 
     switch (opcode) {
-        @intFromEnum(RecvOpcode.CheckPassword) => try login.checkPassword(session, &reader),
+        @intFromEnum(RecvOpcode.CheckPassword) => try loginHandler.check_password.checkPassword(session, &reader),
+        @intFromEnum(RecvOpcode.SelectWorld) => try loginHandler.select_world.selectWorld(session, &reader),
+        @intFromEnum(RecvOpcode.WorldStatusRequest) => try loginHandler.world_status_request.worldStatusRequest(session, &reader),
+        @intFromEnum(RecvOpcode.WorldRequest) => try loginHandler.world_request.worldRequest(session, &reader),
         0x0022 => {}, // ??? sent after handshake but before checkpassword
         0x00DA => {}, // client exit
         else => {
