@@ -13,6 +13,7 @@ pub fn dispatch(
 
     switch (opcode) {
         @intFromEnum(RecvOpcode.CheckPassword) => try loginHandler.check_password.checkPassword(session, &reader),
+        @intFromEnum(RecvOpcode.SelectWorld) => try loginHandler.select_world.selectWorld(session, &reader),
         @intFromEnum(RecvOpcode.WorldStatusRequest) => try loginHandler.world_status_request.worldStatusRequest(session, &reader),
         @intFromEnum(RecvOpcode.WorldRequest) => try loginHandler.world_request.worldRequest(session, &reader),
         0x0022 => {}, // ??? sent after handshake but before checkpassword

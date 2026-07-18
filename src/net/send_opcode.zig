@@ -3,4 +3,5 @@ pub const SendOpcode = enum(u16) {
     CheckPasswordResult = 0x000,
     WorldStatusResult = 0x003,
     WorldInformation = 0x000A,
+    SelectWorldResult = 0x000B,
 };
