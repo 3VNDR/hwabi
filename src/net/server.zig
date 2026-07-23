@@ -1,6 +1,8 @@
 const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
 const ClientSession = @import("client_session.zig").ClientSession;
+const Database = @import("../database/database.zig").Database;
+const DatabaseConfig = @import("../database/config.zig").DatabaseConfig;
 
 pub const Server = struct {
     allocator: std.mem.Allocator,
@@ -17,6 +19,21 @@ pub const Server = struct {
         defer threaded.deinit();
 
         const io = threaded.io();
+
+        var database = try Database.init(
+            io,
+            self.allocator,
+            .{
+                .host = "127.0.0.1",
+                .port = 5432,
+                .username = "postgres",
+                .password = "password",
+                .database = "hwabi",
+            },
+        );
+        defer database.deinit();
+
+        std.debug.print("Connected to PostgreSQL.\n", .{});
 
         var group: std.Io.Group = .init;
         defer group.cancel(io);
