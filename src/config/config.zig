@@ -1,4 +1,8 @@
-pub const DatabaseConfig = struct {
+pub const Config = struct {
+    database: Database,
+};
+
+pub const Database = struct {
     host: []const u8,
     port: u16,
 

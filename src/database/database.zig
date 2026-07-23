@@ -1,6 +1,7 @@
 const std = @import("std");
 const pg = @import("pg");
-const DatabaseConfig = @import("config.zig").DatabaseConfig;
+
+const Config = @import("../config/config.zig").Config;
 
 pub const Database = struct {
     pool: *pg.Pool,
@@ -8,18 +9,18 @@ pub const Database = struct {
     pub fn init(
         io: std.Io,
         allocator: std.mem.Allocator,
-        config: DatabaseConfig,
+        config: Config,
     ) !Database {
         const pool = try pg.Pool.init(io, allocator, .{
-            .size = config.pool_size,
+            .size = config.database.pool_size,
             .auth = .{
-                .username = config.username,
-                .password = config.password,
-                .database = config.database,
+                .username = config.database.username,
+                .password = config.database.password,
+                .database = config.database.database,
             },
             .connect = .{
-                .host = config.host,
-                .port = config.port,
+                .host = config.database.host,
+                .port = config.database.port,
             },
         });
 
