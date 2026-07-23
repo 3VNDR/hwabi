@@ -1,6 +1,6 @@
 const std = @import("std");
 const pg = @import("pg");
-const DatabaseConfig = @import("config.zig").DatabaseConfig;
+const DatabaseConfig = @import("../config/database.zig").DatabaseConfig;
 
 pub const Database = struct {
     pool: *pg.Pool,

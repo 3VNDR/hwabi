@@ -2,7 +2,7 @@ const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
 const ClientSession = @import("client_session.zig").ClientSession;
 const Database = @import("../database/database.zig").Database;
-const DatabaseConfig = @import("../database/config.zig").DatabaseConfig;
+const DatabaseConfig = @import("../config/database.zig").DatabaseConfig;
 
 pub const Server = struct {
     allocator: std.mem.Allocator,
