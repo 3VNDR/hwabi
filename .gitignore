@@ -3,4 +3,4 @@ zig-out/
 zig-pkg/
 *.o
 
-src/config/hwabi.toml
+config/hwabi.toml
