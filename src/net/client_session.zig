@@ -1,9 +1,11 @@
 const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
+const Database = @import("../database/database.zig").Database;
 
 pub const ClientSession = struct {
     allocator: std.mem.Allocator,
     connection: ClientConnection,
+    database: *Database,
 
     pub fn sendPacket(
         self: *ClientSession,

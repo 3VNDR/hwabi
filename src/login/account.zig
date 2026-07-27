@@ -1,10 +1,10 @@
 pub const Account = struct {
     id: i32,
     username: []const u8,
+    password_hash: []const u8, // currently plaintext
 
-    gender: u8,
-    account_mode: u8,
-    user_type: u16,
+    gender: i16,
+    gm_level: i16,
 
-    character_slots: i32,
+    banned: bool,
 };

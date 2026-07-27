@@ -49,6 +49,7 @@ pub const Server = struct {
                     self.allocator,
                     self.io,
                     client,
+                    self.database,
                 },
             );
         }
@@ -59,6 +60,7 @@ fn connectionWorkerTask(
     allocator: std.mem.Allocator,
     io: std.Io,
     client: std.Io.net.Stream,
+    database: *Database,
 ) void {
     var session = ClientSession{
         .allocator = allocator,
@@ -67,6 +69,8 @@ fn connectionWorkerTask(
             io,
             client,
         ),
+        // connection doesnt need db but session does
+        .database = database,
     };
 
     session.handleLoop() catch |err| {
