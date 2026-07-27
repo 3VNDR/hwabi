@@ -2,7 +2,7 @@ const std = @import("std");
 const PacketReader = @import("../../net/packet_reader.zig").PacketReader;
 const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
-const AccountService = @import("../account_service.zig");
+const AccountService = @import("../account_service.zig").AccountService;
 const CheckPasswordResult = @import("../packet/check_password_result.zig");
 const LoginResult = @import("../login_result.zig").LoginResult;
 
@@ -13,7 +13,11 @@ pub fn checkPassword(
     const username = try reader.readString();
     const password = try reader.readString();
 
-    const account = AccountService.authenticate(username, password);
+    const account = try AccountService.authenticate(
+        session.database,
+        username,
+        password,
+    );
 
     std.debug.print("Username: {s}\n", .{username});
     std.debug.print("Password: {s}\n", .{password});
@@ -21,7 +25,6 @@ pub fn checkPassword(
     var writer = PacketWriter.init(session.allocator);
     defer writer.deinit();
 
-    // we are looking for the hardcoded account values of testuser and password
     if (account) |acc| {
         std.debug.print("success", .{});
         try CheckPasswordResult.writeSuccess(&writer, acc);

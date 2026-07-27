@@ -14,9 +14,9 @@ pub fn writeSuccess(
     try writer.writeInt32(0);
 
     try writer.writeInt32(account.id);
-    try writer.writeByte(account.gender);
-    try writer.writeByte(account.account_mode);
-    try writer.writeUint16(account.user_type);
+    try writer.writeByte(@intCast(account.gender));
+    try writer.writeByte(@intCast(account.gm_level));
+    try writer.writeUint16(0); // user type
 
     try writer.writeByte(0); // country
 
@@ -28,7 +28,7 @@ pub fn writeSuccess(
     try writer.writeInt64(0); // chat unblock date
     try writer.writeInt64(0); // register date
 
-    try writer.writeInt32(account.character_slots);
+    try writer.writeInt32(3); // character slots
 
     try writer.writeByte(1); // v44
     try writer.writeByte(1); // sMsg
