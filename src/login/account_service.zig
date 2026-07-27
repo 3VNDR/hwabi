@@ -30,6 +30,8 @@ pub const AccountService = struct {
                 return null;
             }
 
+            try repository.updateLastLogin(acc.id);
+
             return acc;
         }
 
