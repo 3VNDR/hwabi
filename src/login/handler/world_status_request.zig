@@ -1,5 +1,6 @@
 const std = @import("std");
 const PacketReader = @import("../../net/packet_reader.zig").PacketReader;
+const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
 const WorldStatusResult = @import("../packet/world_status_result.zig");
 
@@ -9,9 +10,9 @@ pub fn worldStatusRequest(
 ) !void {
     const worldId = try reader.readByte();
 
-    std.debug.print("World ID: {}\n", .{worldId});
+    var writer = PacketWriter.init(session.allocator);
+    defer writer.deinit();
 
-    // ignore the other byte
-
-    try WorldStatusResult.setWorldStatus(session, worldId);
+    try WorldStatusResult.setWorldStatus(&writer, worldId);
+    try session.sendPacket(writer.slice());
 }

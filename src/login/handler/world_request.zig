@@ -1,5 +1,6 @@
 const std = @import("std");
 const PacketReader = @import("../../net/packet_reader.zig").PacketReader;
+const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
 const WorldInformation = @import("../packet/world_information.zig");
 
@@ -9,8 +10,15 @@ pub fn worldRequest(
 ) !void {
     _ = reader;
 
-    std.debug.print("Reached WorldRequest\n", .{});
+    var info_writer = PacketWriter.init(session.allocator);
+    defer info_writer.deinit();
 
-    try WorldInformation.writeInfo(session);
-    try WorldInformation.writeInfoEnd(session);
+    try WorldInformation.writeInfo(&info_writer);
+    try session.sendPacket(info_writer.slice());
+
+    var end_writer = PacketWriter.init(session.allocator);
+    defer end_writer.deinit();
+
+    try WorldInformation.writeInfoEnd(&end_writer);
+    try session.sendPacket(end_writer.slice());
 }
