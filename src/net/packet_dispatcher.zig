@@ -13,9 +13,11 @@ pub fn dispatch(
 
     switch (opcode) {
         @intFromEnum(RecvOpcode.CheckPassword) => try loginHandler.check_password.handle(session, &reader),
+        @intFromEnum(RecvOpcode.WorldInfoRequest) => try loginHandler.world_info_request.handle(session, &reader),
         @intFromEnum(RecvOpcode.SelectWorld) => try loginHandler.select_world.handle(session, &reader),
         @intFromEnum(RecvOpcode.CheckUserLimit) => try loginHandler.check_user_limit.handle(session, &reader),
         @intFromEnum(RecvOpcode.WorldRequest) => try loginHandler.world_request.handle(session, &reader),
+        @intFromEnum(RecvOpcode.LogoutWorld) => try loginHandler.logout_world.handle(session, &reader),
         0x0022 => {}, // ??? sent after handshake but before checkpassword
         0x00DA => {}, // client exit
         else => {
