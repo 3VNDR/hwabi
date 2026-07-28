@@ -4,4 +4,5 @@ pub const SendOpcode = enum(u16) {
     CheckUserLimitResult = 0x003,
     WorldInformation = 0x000A,
     SelectWorldResult = 0x000B,
+    CheckDuplicatedIDResult = 0x000D,
 };

@@ -4,3 +4,4 @@ pub const check_user_limit = @import("check_user_limit.zig");
 pub const select_world = @import("select_world.zig");
 pub const logout_world = @import("logout_world.zig");
 pub const world_info_request = @import("world_info_request.zig");
+pub const check_duplicated_id = @import("check_duplicated_id.zig");

@@ -6,4 +6,5 @@ pub const RecvOpcode = enum(u16) {
     CheckUserLimit = 0x0006,
     WorldRequest = 0x000B,
     LogoutWorld = 0x000C,
+    CheckDuplicatedID = 0x0015,
 };
