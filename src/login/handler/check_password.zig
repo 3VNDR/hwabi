@@ -6,7 +6,7 @@ const AccountService = @import("../account_service.zig").AccountService;
 const CheckPasswordResult = @import("../packet/check_password_result.zig");
 const LoginResult = @import("../login_result.zig").LoginResult;
 
-pub fn checkPassword(
+pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {
@@ -19,17 +19,13 @@ pub fn checkPassword(
         password,
     );
 
-    std.debug.print("Username: {s}\n", .{username});
-    std.debug.print("Password: {s}\n", .{password});
-
     var writer = PacketWriter.init(session.allocator);
     defer writer.deinit();
 
     if (account) |acc| {
-        std.debug.print("success", .{});
         try CheckPasswordResult.writeSuccess(&writer, acc);
     } else {
-        std.debug.print("not valid account information", .{});
+        // todo: not all issues will be incorrect password
         try CheckPasswordResult.writeFailure(&writer, LoginResult.IncorrectPassword);
     }
 

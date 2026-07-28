@@ -12,10 +12,13 @@ pub fn dispatch(
     const opcode = try reader.readUint16();
 
     switch (opcode) {
-        @intFromEnum(RecvOpcode.CheckPassword) => try loginHandler.check_password.checkPassword(session, &reader),
-        @intFromEnum(RecvOpcode.SelectWorld) => try loginHandler.select_world.selectWorld(session, &reader),
-        @intFromEnum(RecvOpcode.WorldStatusRequest) => try loginHandler.world_status_request.worldStatusRequest(session, &reader),
-        @intFromEnum(RecvOpcode.WorldRequest) => try loginHandler.world_request.worldRequest(session, &reader),
+        @intFromEnum(RecvOpcode.CheckPassword) => try loginHandler.check_password.handle(session, &reader),
+        @intFromEnum(RecvOpcode.WorldInfoRequest) => try loginHandler.world_info_request.handle(session, &reader),
+        @intFromEnum(RecvOpcode.SelectWorld) => try loginHandler.select_world.handle(session, &reader),
+        @intFromEnum(RecvOpcode.CheckUserLimit) => try loginHandler.check_user_limit.handle(session, &reader),
+        @intFromEnum(RecvOpcode.WorldRequest) => try loginHandler.world_request.handle(session, &reader),
+        @intFromEnum(RecvOpcode.LogoutWorld) => try loginHandler.logout_world.handle(session, &reader),
+        @intFromEnum(RecvOpcode.CheckDuplicatedID) => try loginHandler.check_duplicated_id.handle(session, &reader),
         0x0022 => {}, // ??? sent after handshake but before checkpassword
         0x00DA => {}, // client exit
         else => {
