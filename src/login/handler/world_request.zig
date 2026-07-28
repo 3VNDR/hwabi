@@ -4,7 +4,7 @@ const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
 const WorldInformation = @import("../packet/world_information.zig");
 
-pub fn worldRequest(
+pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {

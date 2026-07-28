@@ -4,7 +4,7 @@ const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const ClientSession = @import("../../net/client_session.zig").ClientSession;
 const SelectWorldResult = @import("../packet/select_world_result.zig");
 
-pub fn selectWorld(
+pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {
