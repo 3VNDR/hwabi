@@ -53,4 +53,13 @@ pub const ClientSession = struct {
 
         self.login_state = state;
     }
+
+    pub fn requireLoginState(
+        self: *ClientSession,
+        expected: LoginState,
+    ) !void {
+        if (self.login_state != expected) {
+            return error.InvalidLoginState;
+        }
+    }
 };

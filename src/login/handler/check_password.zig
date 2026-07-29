@@ -10,6 +10,8 @@ pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {
+    try session.requireLoginState(.CheckPassword);
+
     const username = try reader.readString();
     const password = try reader.readString();
 
