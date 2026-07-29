@@ -1,12 +1,14 @@
 const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
 const LoginServer = @import("../login/login_server.zig").LoginServer;
+const LoginState = @import("../login/login_state.zig").LoginState;
 
 pub const ClientSession = struct {
     allocator: std.mem.Allocator,
     connection: ClientConnection,
 
     login_server: *LoginServer,
+    login_state: LoginState = .CheckPassword,
 
     pub fn sendPacket(
         self: *ClientSession,
@@ -35,5 +37,20 @@ pub const ClientSession = struct {
         while (true) {
             try self.connection.readPacket(self, r);
         }
+    }
+
+    pub fn setLoginState(
+        self: *ClientSession,
+        state: LoginState,
+    ) void {
+        std.debug.print(
+            "Login state: {} -> {}\n",
+            .{
+                self.login_state,
+                state,
+            },
+        );
+
+        self.login_state = state;
     }
 };

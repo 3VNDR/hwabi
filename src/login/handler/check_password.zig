@@ -22,6 +22,8 @@ pub fn handle(
     defer writer.deinit();
 
     if (account) |acc| {
+        session.setLoginState(.SelectWorld);
+
         try CheckPasswordResult.writeSuccess(&writer, acc);
     } else {
         // todo: not all issues will be incorrect password
