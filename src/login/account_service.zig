@@ -1,5 +1,4 @@
 const std = @import("std");
-const Database = @import("../database/database.zig").Database;
 const Account = @import("account.zig").Account;
 const AccountRepository = @import("account_repository.zig").AccountRepository;
 
@@ -13,13 +12,11 @@ pub const AccountService = struct {
     }
 
     pub fn authenticate(
-        database: *Database,
+        self: *AccountService,
         username: []const u8,
         password: []const u8,
     ) !?Account {
-        var repository = AccountRepository.init(database);
-
-        const account = try repository.findByUsername(username);
+        const account = try self.repository.findByUsername(username);
 
         if (account) |acc| {
             if (acc.banned) {
@@ -30,7 +27,7 @@ pub const AccountService = struct {
                 return null;
             }
 
-            try repository.updateLastLogin(acc.id);
+            try self.repository.updateLastLogin(acc.id);
 
             return acc;
         }

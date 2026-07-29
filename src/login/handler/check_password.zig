@@ -13,8 +13,7 @@ pub fn handle(
     const username = try reader.readString();
     const password = try reader.readString();
 
-    const account = try AccountService.authenticate(
-        session.database,
+    const account = try session.login_server.authenticate(
         username,
         password,
     );
