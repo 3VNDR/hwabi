@@ -2,6 +2,7 @@ const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
 const LoginServer = @import("../login/login_server.zig").LoginServer;
 const LoginState = @import("../login/login_state.zig").LoginState;
+const Account = @import("../login/account.zig").Account;
 
 pub const ClientSession = struct {
     allocator: std.mem.Allocator,
@@ -9,6 +10,7 @@ pub const ClientSession = struct {
 
     login_server: *LoginServer,
     login_state: LoginState = .CheckPassword,
+    account: ?Account = null,
 
     pub fn sendPacket(
         self: *ClientSession,
