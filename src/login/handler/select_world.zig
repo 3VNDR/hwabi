@@ -8,6 +8,8 @@ pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {
+    try session.requireLoginState(.SelectWorld);
+
     const login_type = try reader.readByte();
     const world_id = try reader.readByte();
     const channel = (try reader.readByte()) + 1;
@@ -19,6 +21,8 @@ pub fn handle(
     std.debug.print("  Login Type: {}\n", .{login_type});
     std.debug.print("  World ID: {}\n", .{world_id});
     std.debug.print("  Channel: {}\n", .{channel});
+
+    session.setLoginState(.SelectCharacter);
 
     try SelectWorldResult.writeResult(&writer);
     try session.sendPacket(writer.slice());

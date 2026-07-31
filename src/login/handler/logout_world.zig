@@ -6,10 +6,11 @@ pub fn handle(
     session: *ClientSession,
     reader: *PacketReader,
 ) !void {
+    try session.requireLoginState(.SelectCharacter);
+
     _ = reader;
-    _ = session;
 
     std.debug.print("LogoutWorld\n", .{});
 
-    // TODO: define transition states
+    session.setLoginState(.SelectWorld);
 }

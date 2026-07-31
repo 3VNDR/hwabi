@@ -1,6 +1,7 @@
 const std = @import("std");
 const ClientConnection = @import("client_connection.zig").ClientConnection;
 const ClientSession = @import("client_session.zig").ClientSession;
+const LoginServer = @import("../login/login_server.zig").LoginServer;
 
 const Database = @import("../database/database.zig").Database;
 const Config = @import("../config/config.zig").Config;
@@ -10,6 +11,8 @@ pub const Server = struct {
     io: std.Io,
     database: *Database,
     config: Config,
+
+    login_server: LoginServer,
 
     pub fn init(
         allocator: std.mem.Allocator,
@@ -22,6 +25,7 @@ pub const Server = struct {
             .io = io,
             .database = database,
             .config = config,
+            .login_server = LoginServer.init(database),
         };
     }
 
@@ -49,7 +53,7 @@ pub const Server = struct {
                     self.allocator,
                     self.io,
                     client,
-                    self.database,
+                    &self.login_server,
                 },
             );
         }
@@ -60,7 +64,7 @@ fn connectionWorkerTask(
     allocator: std.mem.Allocator,
     io: std.Io,
     client: std.Io.net.Stream,
-    database: *Database,
+    login_server: *LoginServer,
 ) void {
     var session = ClientSession{
         .allocator = allocator,
@@ -70,7 +74,7 @@ fn connectionWorkerTask(
             client,
         ),
         // connection doesnt need db but session does
-        .database = database,
+        .login_server = login_server,
     };
 
     session.handleLoop() catch |err| {
