@@ -1,23 +1,35 @@
 const PacketWriter = @import("../../net/packet_writer.zig").PacketWriter;
 const SendOpcode = @import("../../net/send_opcode.zig").SendOpcode;
+const World = @import("../../world/world.zig").World;
 
-pub fn writeInfo(writer: *PacketWriter) !void {
+pub fn writeInfo(
+    writer: *PacketWriter,
+    world: *const World,
+) !void {
     try writer.writeUint16(@intFromEnum(SendOpcode.WorldInformation));
 
-    try writer.writeByte(0); // world id
-    try writer.writeString("Scania"); // name
-    try writer.writeByte(0); // state
-    try writer.writeString("Welcome to Hwabi"); // desc
-    try writer.writeUint16(0); // event exp
-    try writer.writeUint16(0); // event drop
-    try writer.writeByte(0); // char creation block
-    try writer.writeByte(1); // channel #
-    try writer.writeString("Scania-1"); // channel name
-    try writer.writeInt32(100); // pixels ???
-    try writer.writeByte(0); // world id again
-    try writer.writeByte(1); // channel id
-    try writer.writeByte(0); // ???
-    try writer.writeUint16(0); // balloon
+    try writer.writeByte(world.id);
+    try writer.writeString(world.name);
+    try writer.writeByte(world.state);
+    try writer.writeString(world.event_description);
+
+    try writer.writeUint16(world.event_exp);
+    try writer.writeUint16(world.event_drop);
+
+    try writer.writeByte(@intFromBool(world.character_creation_blocked));
+
+    try writer.writeByte(@intCast(world.channels.len));
+
+    for (world.channels) |channel| {
+        try writer.writeString(channel.name);
+        try writer.writeInt32(channel.population);
+
+        try writer.writeByte(world.id);
+        try writer.writeByte(channel.id);
+
+        try writer.writeByte(0);
+        try writer.writeUint16(0); // balloon
+    }
 }
 
 pub fn writeInfoEnd(writer: *PacketWriter) !void {
