@@ -30,7 +30,7 @@ pub fn main(init: std.process.Init.Minimal) !void {
     );
     defer database.deinit();
 
-    var server = Server.init(
+    var server = try Server.init(
         allocator,
         io,
         &database,

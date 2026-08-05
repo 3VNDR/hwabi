@@ -18,9 +18,8 @@ pub fn writeInfo(
 
     try writer.writeByte(@intFromBool(world.character_creation_blocked));
 
-    try writer.writeByte(@intCast(world.channels.len));
-
     for (world.channels) |channel| {
+        try writer.writeByte(channel.id);
         try writer.writeString(channel.name);
         try writer.writeInt32(channel.population);
 
@@ -28,7 +27,7 @@ pub fn writeInfo(
         try writer.writeByte(channel.id);
 
         try writer.writeByte(0);
-        try writer.writeUint16(0); // balloon
+        try writer.writeUint16(0);
     }
 }
 
