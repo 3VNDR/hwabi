@@ -14,8 +14,6 @@ pub const Loader = struct {
 
         const result = try parser.parseFile(io, path);
 
-        // defer result.deinit();   <-- remove this temporarily
-
         return result.value;
     }
 };
