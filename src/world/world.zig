@@ -14,4 +14,17 @@ pub const World = struct {
     character_creation_blocked: bool,
 
     channels: []const Channel,
+
+    pub fn getChannelById(
+        self: *const World,
+        id: u8,
+    ) ?*const Channel {
+        for (self.channels) |*channel| {
+            if (channel.id == id) {
+                return channel;
+            }
+        }
+
+        return null;
+    }
 };

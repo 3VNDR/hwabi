@@ -14,13 +14,26 @@ pub fn handle(
     const world_id = try reader.readByte();
     const channel = (try reader.readByte()) + 1;
 
+    const world = session.login_server.world_manager.getWorldById(world_id) orelse {
+        std.debug.print("Invalid world selected: {}\n", .{world_id});
+        return;
+    };
+
+    const selected_channel = world.getChannelById(channel) orelse {
+        std.debug.print(
+            "Invalid channel selected: {} (world {})\n",
+            .{ channel, world_id },
+        );
+        return;
+    };
+
     var writer = PacketWriter.init(session.allocator);
     defer writer.deinit();
 
     std.debug.print("SelectWorld\n", .{});
     std.debug.print("  Login Type: {}\n", .{login_type});
-    std.debug.print("  World ID: {}\n", .{world_id});
-    std.debug.print("  Channel: {}\n", .{channel});
+    std.debug.print("  World: {s}\n", .{world.name});
+    std.debug.print("  Channel: {s}\n", .{selected_channel.name});
 
     session.setLoginState(.SelectCharacter);
 
