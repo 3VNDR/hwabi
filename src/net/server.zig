@@ -19,13 +19,17 @@ pub const Server = struct {
         io: std.Io,
         database: *Database,
         config: Config,
-    ) Server {
+    ) !Server {
         return .{
             .allocator = allocator,
             .io = io,
             .database = database,
             .config = config,
-            .login_server = LoginServer.init(database),
+            .login_server = try LoginServer.init(
+                allocator,
+                database,
+                config.worlds,
+            ),
         };
     }
 

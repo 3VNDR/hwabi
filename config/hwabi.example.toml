@@ -5,3 +5,13 @@ username = "postgres"
 password = "password"
 database = "hwabi"
 pool_size = 5
+
+[[worlds]]
+id = 0
+name = "Scania"
+description = "Welcome to Hwabi"
+channels = 4
+state = 0
+event_exp = 0
+event_drop = 0
+character_creation_blocked = false

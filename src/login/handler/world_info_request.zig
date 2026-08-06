@@ -13,15 +13,23 @@ pub fn handle(
 ) !void {
     _ = reader;
 
-    var info_writer = PacketWriter.init(session.allocator);
-    defer info_writer.deinit();
+    const worlds = session.login_server.world_manager.getWorlds();
 
-    try WorldInformation.writeInfo(&info_writer);
-    try session.sendPacket(info_writer.slice());
+    for (worlds) |world| {
+        var writer = PacketWriter.init(session.allocator);
+        defer writer.deinit();
 
-    var end_writer = PacketWriter.init(session.allocator);
-    defer end_writer.deinit();
+        try WorldInformation.writeInfo(
+            &writer,
+            &world,
+        );
 
-    try WorldInformation.writeInfoEnd(&end_writer);
-    try session.sendPacket(end_writer.slice());
+        try session.sendPacket(writer.slice());
+    }
+
+    var writer = PacketWriter.init(session.allocator);
+    defer writer.deinit();
+
+    try WorldInformation.writeInfoEnd(&writer);
+    try session.sendPacket(writer.slice());
 }
